@@ -1,0 +1,11 @@
+@"
+# Maven / Java
+target/
+*.class
+*.log
+
+# IntelliJ IDEA
+.idea/
+*.iml
+out/
+"@ | Out-File -Encoding utf8 .gitignore
