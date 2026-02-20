@@ -8,25 +8,13 @@ public class Menu {
     private String coffee;
     private String drink;
 
-    public void setEntrant(Dish entrant) {
-        this.entrant = entrant;
-    }
+    public void setEntrant(Dish entrant) { this.entrant = entrant; }
+    public void setMainCourse(Dish mainCourse) { this.mainCourse = mainCourse; }
+    public void setDessert(String dessert) { this.dessert = dessert; }
+    public void setCoffee(String coffee) { this.coffee = coffee; }
+    public void setDrink(String drink) { this.drink = drink; }
 
-    public void setMainCourse(Dish mainCourse) {
-        this.mainCourse = mainCourse;
-    }
-
-    public void setDessert(String dessert) {
-        this.dessert = dessert;
-    }
-
-    public void setCoffee(String coffee) {
-        this.coffee = coffee;
-    }
-
-    public void setDrink(String drink) {
-        this.drink = drink;
-    }
+    public Dish getMainCourse() { return mainCourse; } // <- para validar build()
 
     @Override
     public String toString() {

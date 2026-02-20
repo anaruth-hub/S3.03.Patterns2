@@ -1,6 +1,7 @@
 package com.ana.patterns.builder.steps;
 
 public interface DessertOrCoffeeStep {
-    DrinkStep withDessert(String dessert);
-    DrinkStep withCoffee(String coffee);
+    DrinkOrBuildStep withDessert(String dessert);
+    DrinkOrBuildStep withCoffee(String coffee);
+
 }
