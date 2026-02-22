@@ -2,25 +2,24 @@
 
 # 🎨 Design Patterns II – Advanced Patterns Implementation
 
-**Builder · Observer · Decorator**
-
-Clean Architecture · SOLID Principles · Unit Tested
+### Builder · Observer · Decorator
+Clean Architecture · SOLID Principles · Fully Unit Tested
 
 </div>
 
 ---
 
-## 📌 Project Description
+## 📌 Project Overview
 
 This project implements three advanced design patterns in Java:
 
-- 🧱 **Builder Pattern** (Fluent + Progressive Interfaces)
-- 🔔 **Observer Pattern**
-- 🧋 **Decorator Pattern**
+- 🧱 **Builder Pattern (Fluent + Progressive Interfaces)**
+- 🔔 **Observer Pattern (Event-driven architecture)**
+- 🧋 **Decorator Pattern (Dynamic behavior composition)**
 
-The objective is to apply SOLID principles and build flexible, extensible, and low-coupled architectures using well-structured object-oriented design.
+The objective is to apply SOLID principles and design flexible, extensible, and low-coupled systems.
 
-All implementations are validated with **JUnit unit tests**.
+All implementations are validated using **JUnit 5 unit tests**.
 
 ---
 
@@ -29,81 +28,142 @@ All implementations are validated with **JUnit unit tests**.
 
 ## 🎯 Objective
 
-Design a fluent and progressive menu builder that:
+Design a flexible and safe menu construction system that:
 
-- Forces the correct construction order.
+- Enforces the correct order of creation.
 - Prevents invalid combinations (Dessert XOR Coffee).
+- Allows optional steps (Entrant, Dessert/Coffee, Drink).
 - Avoids telescopic constructors.
-- Follows SOLID principles.
+- Uses Progressive Interfaces to guide the building flow.
 
 ---
 
-## 🏗️ Key Design Decisions
+## 🏗️ Architectural Improvements
 
-✔ Fluent API for readability  
-✔ Progressive interfaces to enforce order  
-✔ No boolean flags (expressive methods instead)  
-✔ Separation between Model and Builder
+✔ Entrant is optional (`withEntrant()` or `skipEntrant()`)
+
+✔ Main course is mandatory (validated in `build()`)
+
+✔ Dessert and Coffee are mutually exclusive (enforced by interface flow)
+
+✔ Drink is optional without using a negative method like `withoutDrink()`
+
+✔ Absence of elements is modeled through interface transitions
 
 ---
 
-## 🧩 Example Usage
+## 🔄 Progressive Interface Flow
+
+
+Start
+├── withEntrant() → configure → doneEntrant()
+└── skipEntrant()
+↓
+withMainCourse() → configure → doneMain()
+↓
+withDessert() OR withCoffee() OR skipDessertOrCoffee()
+↓
+withDrink() OR skipDrink()
+↓
+build()
+
+
+The design guarantees that:
+
+- You cannot add dessert before main course.
+- You cannot add both dessert and coffee.
+- You cannot build without a main course.
+
+---
+
+## 🧪 Example Usage
 
 ```java
-Menu executiveMenu = new MenuBuilder()
+Menu menu = new MenuBuilder()
+    .withEntrant("Mediterranean Salad")
+        .isVegan()
+        .isGlutenFree()
+        .doneEntrant()
     .withMainCourse("Beef Steak")
         .withSupplement("Extra garnish")
+        .doneMain()
     .withDessert("Chocolate mousse")
+        .doneDessertOrCoffee()
     .withDrink("Red wine")
     .build();
-🧪 Tests Included
-Executive menu creation
-
-Half menu (main + coffee)
-
-Validation of construction flow
-
 🔔 Level 2 – Observer Pattern
 Stock Market Notification System
 🎯 Objective
-Simulate a stock agent that notifies multiple broker agencies whenever the market goes up or down.
 
-🏗️ Architecture Overview
+Implement an event-driven stock notification system where:
+
+A StockAgent (Observable) manages subscriptions.
+
+Multiple agencies (Observers) react to stock market changes.
+
+Observers are notified dynamically when the market goes up or down.
+
+🏗️ Architectural Refinement
+
+Instead of sending a formatted String, the Observable now sends a structured event:
+
+StockEvent(boolean up, double value)
+
+Each observer decides:
+
+How to interpret the data
+
+How to display or process it
+
+This reduces coupling and improves flexibility.
+
+🧩 Architecture Overview
 StockAgent (Observable)
+        ↓
+StockEvent (Data)
         ↓
 StockObserver (Interface)
         ↓
 StockBrokerAgency (Concrete Observer)
-✨ Features
-Dynamic subscription/unsubscription
+✨ Key Improvements
 
-Automatic notifications
+✔ Observable sends data, not formatted text
+✔ Observers decide presentation logic
+✔ Observers maintain internal notification history (for test validation)
+✔ Dynamic subscription and unsubscription supported
 
-Decoupled architecture
-
-Console message verification via unit tests
-
-🧪 Example Test Scenario
+🧪 Example Behavior
 agent.stockMarketUp(150.75);
 agent.stockMarketDown(145.50);
-Expected Output:
+
+Observers react independently:
 
 Alpha Brokers received notification: Stock market went UP to 150.75
 Zenith Investments received notification: Stock market went DOWN to 145.50
 🧋 Level 3 – Decorator Pattern
 Bubble Tea Customization System
 🎯 Objective
-Allow dynamic customization of Bubble Tea beverages without creating multiple subclasses for every combination.
 
-🏗️ Pattern Structure
+Allow dynamic customization of Bubble Tea beverages without creating multiple subclasses for every possible combination.
+
+🏗️ Structure
 BubbleTea (Component)
    ↑
-Base Teas (Concrete Components)
+Base Teas (Latte / Matcha / Tea)
    ↑
 BubbleTeaDecorator (Abstract Decorator)
    ↑
-Toppings (Concrete Decorators)
-🧩 Example Usage
+Ice / Sugar / Tapioca / Flavor
+
+Each decorator:
+
+Wraps another BubbleTea
+
+Modifies cost
+
+Extends description
+
+🧪 Example Usage
 BubbleTea tea = new LatteBase();
 tea = new Tapioca(tea);
 tea = new Sugar(tea);
@@ -112,64 +172,45 @@ tea = new Flavor(tea, "Mango");
 
 System.out.println(tea.getDescription());
 System.out.println(tea.getCost());
-Output
+
+Output:
+
 Latte Bubble Tea + Tapioca + Sugar + Flavor: Strawberry + Flavor: Mango
 5.50
-🧪 Test Coverage
-Base beverage cost validation
+🛠 Technologies
 
-Multiple decorators stacking
-
-Flavor validation (no blank names)
-
-Cost accumulation precision
-
-🛠 Technologies Used
-Java 17+
-
-JUnit 5
+Java 21 (Eclipse Temurin)
 
 Maven
 
+JUnit 5
+
 IntelliJ IDEA
 
-🚀 Installation & Execution
-1️⃣ Clone the repository
-git clone https://github.com/your-username/design-patterns-II.git
-2️⃣ Open in IntelliJ IDEA
-Import as Maven project
+🚀 How to Run
+1️⃣ Clone repository
+git clone https://github.com/your-username/S3.03.Patterns_2.git
+2️⃣ Open in IntelliJ
 
-Ensure JDK 17+
+Import as Maven project.
 
 3️⃣ Run tests
+
 From IntelliJ:
+Right click → Run Tests
 
-Right-click → Run All Tests
-
-Or via Maven:
+Or via terminal:
 
 mvn test
-📐 Technical Decisions & SOLID Principles
-Single Responsibility Principle (SRP)
-Each class has a single well-defined responsibility.
-
-Open/Closed Principle (OCP)
-New behaviors (decorators, observers, strategies) can be added without modifying existing code.
-
-Dependency Inversion Principle (DIP)
-High-level modules depend on abstractions, not concrete implementations.
-
-🧠 Why These Patterns?
-Pattern	Problem Solved
-Builder	Complex object construction
-Observer	Event-driven notification
-Decorator	Dynamic behavior extension
-📸 Demonstration
-All patterns are fully demonstrated through unit tests.
-
-No UI required.
-
+📐 SOLID Principles Applied
+Principle	Where It Applies
+SRP	Builder builds, Menu represents
+OCP	New decorators, observers, or builder steps can be added
+DIP	Observers depend on abstraction
+Low Coupling	Observable sends data, not formatted message
+High Cohesion	Each class has a single clear responsibility
 <div align="center">
-✨ Clean Code · Modular Design · Testable Architecture ✨
+
+✨ Modular · Extensible · Testable · Clean Design ✨
 
 </div> ```

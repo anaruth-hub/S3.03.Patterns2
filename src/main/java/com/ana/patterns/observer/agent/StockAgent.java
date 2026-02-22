@@ -37,12 +37,12 @@ public final class StockAgent {
 
     private void update(StockEvent event) {
         this.currentValue = event.value();
-        notifyObservers(event.message());
+        notifyObservers(event);
     }
 
-    private void notifyObservers(String message) {
+    private void notifyObservers(StockEvent event) {
         for (StockObserver observer : observers) {
-            observer.onStockUpdate(message);
+            observer.onStockUpdate(event);
         }
     }
 }

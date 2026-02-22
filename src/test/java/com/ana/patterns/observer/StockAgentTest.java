@@ -4,9 +4,6 @@ import com.ana.patterns.observer.agent.StockAgent;
 import com.ana.patterns.observer.observers.StockBrokerAgency;
 import org.junit.jupiter.api.Test;
 
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 class StockAgentTest {
@@ -21,27 +18,19 @@ class StockAgentTest {
         agent.addObserver(alpha);
         agent.addObserver(zenith);
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        PrintStream original = System.out;
-
-        try {
-            System.setOut(new PrintStream(out));
-
-            agent.stockMarketUp(150.75);
-            agent.stockMarketDown(145.50);
-
-        } finally {
-            System.setOut(original);
-        }
-
-        String printed = out.toString();
-
-        assertTrue(printed.contains("Alpha Brokers received notification: Stock market went UP to 150.75"));
-        assertTrue(printed.contains("Zenith Investments received notification: Stock market went UP to 150.75"));
-        assertTrue(printed.contains("Alpha Brokers received notification: Stock market went DOWN to 145.5"));
-        assertTrue(printed.contains("Zenith Investments received notification: Stock market went DOWN to 145.5"));
+        agent.stockMarketUp(150.75);
+        agent.stockMarketDown(145.50);
 
         assertEquals(145.50, agent.getCurrentValue());
+
+        assertEquals(2, alpha.history().size());
+        assertEquals(2, zenith.history().size());
+
+        assertEquals("Alpha Brokers received notification: Stock market went UP to 150.75", alpha.history().get(0));
+        assertEquals("Alpha Brokers received notification: Stock market went DOWN to 145.50", alpha.history().get(1));
+
+        assertEquals("Zenith Investments received notification: Stock market went UP to 150.75", zenith.history().get(0));
+        assertEquals("Zenith Investments received notification: Stock market went DOWN to 145.50", zenith.history().get(1));
     }
 
     @Test
@@ -53,21 +42,16 @@ class StockAgentTest {
 
         agent.addObserver(alpha);
         agent.addObserver(zenith);
+
         agent.removeObserver(zenith);
 
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
-        PrintStream original = System.out;
+        agent.stockMarketUp(200.0);
 
-        try {
-            System.setOut(new PrintStream(out));
-            agent.stockMarketUp(200.0);
-        } finally {
-            System.setOut(original);
-        }
+        assertEquals(200.0, agent.getCurrentValue());
 
-        String printed = out.toString();
+        assertEquals(1, alpha.history().size());
+        assertEquals("Alpha Brokers received notification: Stock market went UP to 200.00", alpha.history().get(0));
 
-        assertTrue(printed.contains("Alpha Brokers received notification: Stock market went UP to 200.0"));
-        assertFalse(printed.contains("Zenith Investments received notification"));
+        assertEquals(0, zenith.history().size());
     }
 }
